@@ -1,25 +1,25 @@
 FROM ghcr.io/hazmi35/node:22-dev-alpine as build-stage
 
-# Prepare pnpm with corepack (experimental feature)
-RUN corepack enable && corepack prepare pnpm@latest
+# Prepare npm with corepack (experimental feature)
+RUN corepack enable && corepack prepare npm@latest
 
 # Copy package.json, lockfile and npm config files
-COPY package.json pnpm-lock.yaml *.npmrc  ./
+COPY package.json package-lock.json *.npmrc  ./
 
 # Fetch dependencies to virtual store
-RUN pnpm fetch
+# RUN npm fetch
 
 # Install dependencies
-RUN pnpm install --offline --frozen-lockfile
+RUN npm install --force 
 
 # Copy Project files
 COPY . .
 
 # Build TypeScript Project
-RUN pnpm run build
+RUN npm run build
 
 # Prune devDependencies
-RUN pnpm prune --production
+# RUN npm prune --production
 
 # Get ready for production
 FROM ghcr.io/hazmi35/node:22-alpine
